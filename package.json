@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "hardhat": "^2.22.3",
+    "hardhat-circom": "^3.3.2"
+  }
+}
