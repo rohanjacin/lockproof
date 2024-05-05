@@ -40,13 +40,13 @@ template negShared (n, k) {
 template LockAuth (n, k) {
 	signal input cipherpoint1[2][k];
 	signal input cipherpoint2[2][k];
-	signal input privkey[2][k];
+	signal input privkey[k];
 	signal input expectedPm[2][k];
 
 	component sharedPoint = Shared(n, k);
 
 	for (var idx = 0; idx < k ; idx++) {
-		sharedPoint.privkey[idx] <== privkey[0][idx]; 
+		sharedPoint.privkey[idx] <== privkey[idx]; 
 	}
 
 	for (var idx = 0; idx < k ; idx++) {
@@ -84,7 +84,10 @@ template LockAuth (n, k) {
 		Pm[1][idx] <== secret.out[1][idx];
 	}
 
-	expectedPm <== Pm;
+	//for (var idx = 0; idx < k ; idx++) {
+	//	expectedPm[0][idx] - Pm[0][idx] === 0;
+	//	expectedPm[1][idx] - Pm[1][idx] === 0;
+	//}
 }
 
 template InvPoint(n, k) {
@@ -100,6 +103,7 @@ template InvPoint(n, k) {
     var p[100] = get_secp256k1_prime(n, k);
     
     signal output out [2][k];
+    signal output out1 [2][k];
 
     var neg_y[100] = long_sub_mod_p(n, k, p, y, p);
 
@@ -107,9 +111,11 @@ template InvPoint(n, k) {
 
     for (var idx = 0; idx < k; idx++) {
         out[0][idx] <== point[0][idx];
-        out[1][idx] <-- neg_y[idx];
-        out[1][idx] === neg_y[idx];
+        out1[1][idx] <-- neg_y[idx];
     }
+    for (var idx = 0; idx < k; idx++) {
+        out[1][idx] <== out1[1][idx];
+	}
 }
 
 component main { public [ cipherpoint1, cipherpoint2 ] } = LockAuth(64, 4);
